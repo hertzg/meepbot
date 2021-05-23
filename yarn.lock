@@ -5757,6 +5757,7 @@ __metadata:
     eslint-config-prettier: ^8.3.0
     eslint-plugin-prettier: ^3.4.0
     jest: ^26.6.3
+    miniget: ^4.2.0
     p-event: ^4.2.0
     prettier: ^2.3.0
     reflect-metadata: ^0.1.13
@@ -5883,7 +5884,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"miniget@npm:^4.0.0":
+"miniget@npm:^4.0.0, miniget@npm:^4.2.0":
   version: 4.2.0
   resolution: "miniget@npm:4.2.0"
   checksum: 129c1178bd56e9eec4dddcbcdae00e555be90111ab108dba2b7e6bb9b186610736a666dfa16cc4043df9222c9da6feba7c4139c59f9c748c183b6b3268ae344d

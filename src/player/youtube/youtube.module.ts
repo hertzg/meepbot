@@ -6,5 +6,6 @@ import { YouTubeController } from './youtube.controller';
   imports: [],
   controllers: [YouTubeController],
   providers: [YouTubeService],
+  exports: [YouTubeService],
 })
-export class YoutubeModule {}
+export class YouTubeModule {}

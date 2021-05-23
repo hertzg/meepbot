@@ -7,7 +7,10 @@ interface IFindAudioStreamOptions {
 
 @Injectable()
 export class YouTubeService {
-  fetchAudioOnlyUrl = async (url: string, options: IFindAudioStreamOptions) => {
+  fetchAudioOnlyUrl = async (
+    url: string,
+    options: IFindAudioStreamOptions = { quality: 'highest' },
+  ) => {
     const info = await getInfo(url);
     const chosen = chooseFormat(info.formats, {
       filter: 'audioonly',

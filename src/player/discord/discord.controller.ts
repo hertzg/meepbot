@@ -55,7 +55,7 @@ export class DiscordController {
     example: '839493031580270626',
   })
   async joinChannelVoice(@Param('channelId') id) {
-    const connection = await this.discord.joinVoice(id);
+    const connection = await this.discord.join(id);
     return {
       voice: {
         id: connection.voice.id,
@@ -75,6 +75,6 @@ export class DiscordController {
     example: '839493031580270626',
   })
   async leaveChannelVoice(@Param('channelId') id) {
-    await this.discord.leaveVoice(id);
+    await this.discord.leave(id);
   }
 }

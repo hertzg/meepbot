@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DiscordModule } from './discord/discord.module';
-import { MixerModule } from './mixer/mixer.module';
-import { YoutubeModule } from './youtube/youtube.module';
+import { PlayerModule } from './player/player.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), DiscordModule, MixerModule, YoutubeModule],
+  imports: [ConfigModule.forRoot(), PlayerModule],
   controllers: [],
   providers: [],
 })
