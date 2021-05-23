@@ -15,6 +15,9 @@
 !.yarn/sdks
 !.yarn/versions
 
+# Node Modules
+node_modules/
+
 # IntelliJ Idea
 .idea/
 
