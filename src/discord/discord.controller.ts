@@ -9,15 +9,20 @@ import {
   Res,
 } from '@nestjs/common';
 import { DiscordService } from './discord.service';
-import { ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { channel } from 'diagnostic_channel';
 
+@ApiTags('discord')
 @Controller('discord')
 export class DiscordController {
   constructor(private discord: DiscordService) {}
 
   @Get(['voices'])
   async connectedChannels() {
-    return this.discord.voiceConnections();
+    const voices = this.discord.voiceConnections();
+    return {
+      voices,
+    };
   }
 
   @Get(['voice/:channelId'])
@@ -38,7 +43,7 @@ export class DiscordController {
       return;
     }
 
-    return res.status(200).json(voice);
+    return res.status(200).json({ voice });
   }
 
   @Put('voice/:channelId')
@@ -51,7 +56,14 @@ export class DiscordController {
   })
   async joinChannelVoice(@Param('channelId') id) {
     const connection = await this.discord.joinVoice(id);
-    return connection.voice.id;
+    return {
+      voice: {
+        id: connection.voice.id,
+        channel: {
+          id: connection.channel.id,
+        },
+      },
+    };
   }
 
   @Delete('voice/:channelId')

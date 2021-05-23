@@ -5636,6 +5636,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"m3u8stream@npm:^0.8.3":
+  version: 0.8.3
+  resolution: "m3u8stream@npm:0.8.3"
+  dependencies:
+    miniget: ^4.0.0
+    sax: ^1.2.4
+  checksum: 91704b87482705af70a924bd9a3bbafb698a7f9180493c2802c23a465789337b72b96ade3e56076f1b72a7516b9af111fd7233314a7410ce54e51d5574ead77c
+  languageName: node
+  linkType: hard
+
 "macos-release@npm:^2.2.0":
   version: 2.4.1
   resolution: "macos-release@npm:2.4.1"
@@ -5760,6 +5770,7 @@ __metadata:
     tsconfig-paths: ^3.9.0
     typescript: ^4.2.4
     web-audio-api: ^0.2.2
+    ytdl-core: ^4.8.0
   languageName: unknown
   linkType: soft
 
@@ -5869,6 +5880,13 @@ __metadata:
   version: 2.1.0
   resolution: "mimic-fn@npm:2.1.0"
   checksum: f7d2d7febe3d7dd71da0700b1d455ec6c951a96b463ffcc303c93771b9fe4e45318152ea677c241505b19b39e41d906e5052cfb382d59a44bdb6d3d57f8b467b
+  languageName: node
+  linkType: hard
+
+"miniget@npm:^4.0.0":
+  version: 4.2.0
+  resolution: "miniget@npm:4.2.0"
+  checksum: 129c1178bd56e9eec4dddcbcdae00e555be90111ab108dba2b7e6bb9b186610736a666dfa16cc4043df9222c9da6feba7c4139c59f9c748c183b6b3268ae344d
   languageName: node
   linkType: hard
 
@@ -7254,6 +7272,13 @@ __metadata:
   bin:
     sane: ./src/cli.js
   checksum: e384e252021b1afef7459e994fe3ea79d114a0e7d23a03e660444abf15a2b4c50ce7eac2810b2c289e857c618d96fb35ee66356ebd4d6cb97cb11b54b2b29600
+  languageName: node
+  linkType: hard
+
+"sax@npm:^1.1.3, sax@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "sax@npm:1.2.4"
+  checksum: 9d7668d69105e89e2c1a4b2fdc12c72e1a2f78b825f7b4a8a2ea5cdfebf70920bd17715bed55264c3b3959616a0695f8ad2d098bf6944fbd0953ee9c695dceef
   languageName: node
   linkType: hard
 
@@ -8959,5 +8984,16 @@ typescript@^4.2.4:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 096c3b40beb2804659539be1605a35c58eb0c85285f94b77b3e924f42ee265c1a40bf9f4153770039517146b469a964d51742395f35ca8135fc9f7e4982b785d
+  languageName: node
+  linkType: hard
+
+"ytdl-core@npm:^4.8.0":
+  version: 4.8.0
+  resolution: "ytdl-core@npm:4.8.0"
+  dependencies:
+    m3u8stream: ^0.8.3
+    miniget: ^4.0.0
+    sax: ^1.1.3
+  checksum: 0c46c21624d5322e761c1cd878be1d3f2a76d488321de1f0ef819f1df1e319330719c2f651ba52d1868264a40bb274a9761a1596bcff8186a974d74274681e6c
   languageName: node
   linkType: hard
