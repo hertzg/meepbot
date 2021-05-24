@@ -3,14 +3,11 @@ import {
   Delete,
   Get,
   Param,
-  Post,
   Put,
-  Query,
   Res,
 } from '@nestjs/common';
 import { DiscordService } from './discord.service';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { channel } from 'diagnostic_channel';
 
 @ApiTags('discord')
 @Controller('discord')

@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CacheService } from './cache.service';
 
-@ApiTags('cache')
+@ApiTags('cache', 'media')
 @Controller('media/cache')
 export class CacheController {
   constructor(private cache: CacheService) {}

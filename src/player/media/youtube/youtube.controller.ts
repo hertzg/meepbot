@@ -3,7 +3,7 @@ import { getInfo, chooseFormat, videoFormat } from 'ytdl-core';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { YouTubeService } from './youtube.service';
 
-@ApiTags('youtube')
+@ApiTags('media', 'youtube')
 @Controller('media/youtube')
 export class YouTubeController {
   constructor(private youtube: YouTubeService) {}
