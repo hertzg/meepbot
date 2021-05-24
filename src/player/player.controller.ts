@@ -12,8 +12,8 @@ import {
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from './player.service';
 
-@ApiTags('player')
-@Controller('player')
+@ApiTags('player', 'media')
+@Controller('media/player')
 export class PlayerController {
   constructor(private player: PlayerService) {}
 
@@ -69,6 +69,6 @@ export class PlayerController {
     example: '839493031580270626',
   })
   async resume(@Param('channelId') id) {
-    return { resume: await this.player.pause(id) };
+    return { resume: await this.player.resume(id) };
   }
 }
