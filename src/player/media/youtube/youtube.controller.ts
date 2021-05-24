@@ -4,7 +4,7 @@ import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { YouTubeService } from './youtube.service';
 
 @ApiTags('youtube')
-@Controller('youtube')
+@Controller('media/youtube')
 export class YouTubeController {
   constructor(private youtube: YouTubeService) {}
 

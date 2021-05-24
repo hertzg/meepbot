@@ -1,23 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DiscordService } from './discord/discord.service';
-import { YouTubeService } from './youtube/youtube.service';
-import { StreamingService } from './streaming.service';
+import { YouTubeService } from './media/youtube/youtube.service';
+import { DownloadService } from './media/download.service';
+import { MediaService } from './media/media.service';
 
 @Injectable()
 export class PlayerService {
-  constructor(
-    private discord: DiscordService,
-    private youtube: YouTubeService,
-    private streamer: StreamingService,
-  ) {}
+  constructor(private discord: DiscordService, private media: MediaService) {}
 
   async play(channelId: string, link: string) {
-    const [url] = await Promise.all([
-      this.youtube.fetchAudioOnlyUrl(link),
+    const [stream] = await Promise.all([
+      this.media.fromYouTube(link),
       this.discord.join(channelId),
     ]);
 
-    const stream = await this.streamer.createReadStream(url);
     return this.discord.play(channelId, stream);
   }
 

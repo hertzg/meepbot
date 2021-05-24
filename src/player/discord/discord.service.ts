@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Client, Channel, VoiceChannel, VoiceConnection } from 'discord.js';
 import { Readable } from 'stream';
 
@@ -7,6 +7,8 @@ const isVoiceChannel = (channel: Channel): channel is VoiceChannel =>
 
 @Injectable()
 export class DiscordService {
+  private readonly logger = new Logger(DiscordService.name);
+
   constructor(private client: Client) {}
 
   voiceConnections = () => {
@@ -36,7 +38,11 @@ export class DiscordService {
   play = (channelId: string, stream: Readable) => {
     const conn = this.getConnectionByChannel(channelId);
     if (conn) {
-      conn.play(stream, { type: 'webm/opus' });
+      this.logger.log('Starting playback');
+      const dispatcher = conn.play(stream, { type: 'webm/opus' });
+      dispatcher.once('finish', () => {
+        this.leave(channelId);
+      });
       return true;
     }
     return false;
