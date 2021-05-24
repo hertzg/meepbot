@@ -13,7 +13,7 @@ export class ManifestService {
     this.stream = createWriteStream(PATH_DATA, {
       encoding: 'utf-8',
       flags: 'a',
-      highWaterMark: 0,
+      highWaterMark: 1,
     });
   }
 
