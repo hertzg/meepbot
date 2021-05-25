@@ -41,13 +41,14 @@ export class DiscordService {
   play = (channelId: string, stream: Readable) => {
     const conn = this.getConnection(channelId);
     if (conn) {
-      this.logger.log('Starting playback');
       const dispatcher = conn.play(stream, { type: 'webm/opus' });
       dispatcher.once('finish', () => {
         this.leave(channelId);
       });
       return true;
     }
+
+    this.logger.debug('Unable to play stream: voice not connected');
     return false;
   };
 
@@ -57,6 +58,8 @@ export class DiscordService {
       conn.dispatcher?.destroy();
       return true;
     }
+
+    this.logger.debug('Unable to stop stream: voice not connected');
     return false;
   };
 
@@ -66,6 +69,8 @@ export class DiscordService {
       conn.dispatcher.pause();
       return true;
     }
+
+    this.logger.debug('Unable to pause stream: voice not connected');
     return false;
   };
 
@@ -76,12 +81,15 @@ export class DiscordService {
       conn.dispatcher.resume();
       return true;
     }
+
+    this.logger.debug('Unable to resume stream: voice not connected');
     return false;
   };
 
   join = async (channelId: string): Promise<VoiceConnection> => {
     const conn = this.getConnection(channelId);
     if (conn) {
+      this.logger.verbose('Not joining: already connected');
       return conn;
     }
 
@@ -99,6 +107,8 @@ export class DiscordService {
       await conn.channel.leave();
       return true;
     }
+
+    this.logger.debug('Unable to leave channel: voice not connected');
     return false;
   };
 }
