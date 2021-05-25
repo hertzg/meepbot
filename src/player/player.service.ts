@@ -28,7 +28,7 @@ export class PlayerService {
     return [prevState, this.audio.getState(channelId)];
   };
 
-  autoPlay = async (channelId: string, link: string) => {
+  private autoPlay = async (channelId: string, link: string) => {
     const stream = await this.media.streamYouTubeVideo(link);
     await this.audio.connect(channelId);
 
@@ -43,7 +43,7 @@ export class PlayerService {
     return played;
   };
 
-  autoNext = async (channelId: string) => {
+  private autoNext = async (channelId: string) => {
     const next = this.playlist.dequeue(channelId);
     if (next) {
       await this.autoNext(channelId);
