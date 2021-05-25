@@ -10,7 +10,11 @@ export class MediaService {
     private readonly download: DownloadService,
   ) {}
 
-  fromYouTube = async (link: string): Promise<Readable> => {
+  /**
+   * Creates a Readable OPUS Audio Only stream from a YouTube video link
+   * @param link full youtube video link
+   */
+  streamYouTubeVideo = async (link: string): Promise<Readable> => {
     const cached = this.download.fetchCached(link);
     if (cached) {
       return cached;

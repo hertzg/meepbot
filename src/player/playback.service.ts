@@ -13,7 +13,7 @@ export class PlaybackService {
 
   play = async (channelId: string, link: string) => {
     const [stream] = await Promise.all([
-      this.media.fromYouTube(link),
+      this.media.streamYouTubeVideo(link),
       this.discord.join(channelId),
     ]);
 
