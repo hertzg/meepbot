@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { chooseFormat, Filter, getInfo, videoFormat } from 'ytdl-core';
+import { chooseFormat, getInfo } from 'ytdl-core';
 
 interface IFindAudioStreamOptions {
   quality: 'lowest' | 'highest';
@@ -7,7 +7,7 @@ interface IFindAudioStreamOptions {
 
 @Injectable()
 export class YouTubeService {
-  fetchAudioOnlyUrl = async (
+  videoMediaUrl = async (
     url: string,
     options: IFindAudioStreamOptions = { quality: 'highest' },
   ) => {

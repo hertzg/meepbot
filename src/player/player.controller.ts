@@ -22,7 +22,7 @@ export class PlayerController {
     required: false,
     example: 'https://www.youtube.com/watch?v=zs5G5qPudzo',
   })
-  async playNow(@Param('channelId') id, @Query('url') link) {
+  async playNow(@Param('channelId') id: string, @Query('url') link: string) {
     return { playNow: await this.player.playNow(id, link) };
   }
 
@@ -34,7 +34,7 @@ export class PlayerController {
     required: true,
     example: '839493031580270626',
   })
-  async playPause(@Param('channelId') id) {
+  async playPause(@Param('channelId') id: string) {
     return { playNow: await this.player.playPause(id) };
   }
 }

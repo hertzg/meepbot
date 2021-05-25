@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Injectable, Query } from '@nestjs/common';
-import { getInfo, chooseFormat, videoFormat } from 'ytdl-core';
-import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { YouTubeService } from './youtube.service';
 
 @ApiTags('media', 'youtube')
@@ -28,7 +27,7 @@ export class YouTubeController {
     @Query('url') link: string,
     @Query('quality') quality: 'lowest' | 'highest',
   ) {
-    const url = await this.youtube.fetchAudioOnlyUrl(link, { quality });
+    const url = await this.youtube.videoMediaUrl(link, { quality });
     return {
       url,
     };

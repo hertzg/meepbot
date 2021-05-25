@@ -4,18 +4,17 @@ import { DownloadService } from './download.service';
 import { CacheService } from './cache.service';
 import { StorageService } from './storage.service';
 import { MediaService } from './media.service';
-import { CacheController } from './cache.controller';
 import { ManifestService } from './manifest.service';
 
 @Module({
   imports: [YouTubeModule],
-  controllers: [CacheController],
+  controllers: [],
   providers: [
     MediaService,
+    ManifestService,
     DownloadService,
     CacheService,
     StorageService,
-    ManifestService,
   ],
   exports: [MediaService],
 })

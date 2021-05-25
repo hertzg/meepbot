@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { YouTubeService } from './youtube/youtube.service';
 import { DownloadService } from './download.service';
-import { Readable } from 'stream';
+import { CacheService } from './cache.service';
 
 @Injectable()
 export class MediaService {
   constructor(
     private readonly youtube: YouTubeService,
+    private readonly cache: CacheService,
     private readonly download: DownloadService,
   ) {}
 
   /**
-   * Creates a Readable OPUS Audio Only stream from a YouTube video link
+   * Creates a Readable OPUS Audio Only play from a YouTube video link
    * @param link full youtube video link
    */
-  streamYouTubeVideo = async (link: string): Promise<Readable> => {
-    const cached = this.download.fetchCached(link);
+  streamYouTubeVideo = async (link: string) => {
+    const cached = await this.cache.createReadStream(link);
     if (cached) {
       return cached;
     }
 
-    const url = await this.youtube.fetchAudioOnlyUrl(link);
-    return this.download.fetchAndCache(link, url);
+    const [media, cacheStream] = await Promise.all([
+      this.youtube.videoMediaUrl(link),
+      this.cache.createWriteStream(link),
+    ]);
+
+    if (cacheStream) {
+      (await this.download.stream(media)).pipe(cacheStream);
+    }
+
+    return await this.download.stream(media);
   };
 }

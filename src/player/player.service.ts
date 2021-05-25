@@ -1,49 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { DiscordService } from './discord/discord.service';
 import { PlaylistService } from './playlist.service';
-import { PlaybackService } from './playback.service';
-
-export const enum PlayerState {
-  CONNECTED,
-  PAUSED,
-  PLAYING,
-}
+import { AudioService, AudioState } from './audio.service';
+import { MediaService } from './media/media.service';
 
 @Injectable()
 export class PlayerService {
-  private readonly state = new Map<string, PlayerState>();
-
   constructor(
     private readonly discord: DiscordService,
-    private readonly playback: PlaybackService,
+    private readonly media: MediaService,
+    private readonly audio: AudioService,
     private readonly playlist: PlaylistService,
   ) {}
 
-  playNow = async (channelId: string, link?: string) => {
-    const prevState = this.state.get(channelId);
+  playNow = async (channelId: string, link: string) => {
+    const prevState = this.audio.getState(channelId);
     switch (prevState) {
       case undefined:
-      case PlayerState.CONNECTED:
-      case PlayerState.PAUSED:
-      case PlayerState.PLAYING:
+      case AudioState.READY:
+      case AudioState.PAUSED:
+      case AudioState.PLAYING:
         await this.stop(channelId);
         await this.autoPlay(channelId, link);
-        if (link) {
-          this.playlist.enqueue(channelId, link);
-        }
         break;
     }
 
-    return [prevState, this.state.get(channelId)];
+    return [prevState, this.audio.getState(channelId)];
   };
 
   autoPlay = async (channelId: string, link: string) => {
-    const played = await this.playback.play(channelId, link);
-    if (played) {
-      this.discord
-        .getConnection(channelId)
-        .dispatcher.once('finish', () => this.autoNext(channelId));
-    } else {
+    const stream = await this.media.streamYouTubeVideo(link);
+    await this.audio.connect(channelId);
+
+    const played = await this.audio.play(channelId, stream, () =>
+      this.autoNext(channelId),
+    );
+
+    if (!played) {
       await this.autoNext(channelId);
     }
 
@@ -62,42 +55,26 @@ export class PlayerService {
   };
 
   playPause = async (channelId: string) => {
-    const playerState = this.state.get(channelId);
-    switch (playerState) {
-      case PlayerState.PAUSED:
+    const audioState = this.audio.getState(channelId);
+    switch (audioState) {
+      case AudioState.PAUSED:
         return {
           resume: this.resume(channelId),
         };
 
-      case PlayerState.PLAYING:
+      case AudioState.PLAYING:
         return {
           pause: this.pause(channelId),
         };
     }
   };
 
-  pause = async (channelId: string) => {
-    if (this.state.get(channelId) === PlayerState.PLAYING) {
-      const paused = this.playback.pause(channelId);
-      this.state.set(channelId, PlayerState.PAUSED);
-      return paused;
-    }
-    return false;
-  };
+  pause = async (channelId: string) => this.audio.pause(channelId);
 
-  resume = async (channelId: string) => {
-    if (this.state.get(channelId) === PlayerState.PAUSED) {
-      this.state.set(channelId, PlayerState.PLAYING);
-      return this.playback.resume(channelId);
-    }
-  };
+  resume = async (channelId: string) => this.audio.resume(channelId);
 
   stop = async (channelId: string) => {
-    const stopped = await this.playback.stop(channelId);
-    if (stopped) {
-      this.state.delete(channelId);
-      this.playlist.deleteQueue(channelId);
-    }
-    return stopped;
+    this.playlist.deleteQueue(channelId);
+    return this.audio.stop(channelId);
   };
 }

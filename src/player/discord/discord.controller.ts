@@ -1,13 +1,15 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Put,
-  Res,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param, Put, Res } from '@nestjs/common';
 import { DiscordService } from './discord.service';
-import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+
+const CHANNEL_ID = {
+  name: 'channelId',
+  description: 'Voice channel id',
+  type: 'string',
+  required: true,
+  example: '839493031580270626',
+};
 
 @ApiTags('discord')
 @Controller('discord')
@@ -23,17 +25,10 @@ export class DiscordController {
   }
 
   @Get(['voice/:channelId'])
-  @ApiParam({
-    name: 'channelId',
-    description: 'Voice channel id',
-    type: 'string',
-    required: true,
-    example: '839493031580270626',
-  })
-  async connectedChannel(@Param('channelId') id, @Res() res) {
-    const voice = this.discord
-      .voiceConnections()
-      .find((c) => c.channel.id === id);
+  @ApiParam(CHANNEL_ID)
+  async connectedChannel(@Param('channelId') id: string, @Res() res: Response) {
+    const connections = await this.discord.voiceConnections();
+    const voice = connections.find((c) => c.channel.id === id);
 
     if (!voice) {
       res.status(404).end();
@@ -44,34 +39,14 @@ export class DiscordController {
   }
 
   @Put('voice/:channelId')
-  @ApiParam({
-    name: 'channelId',
-    description: 'Voice channel id',
-    type: 'string',
-    required: true,
-    example: '839493031580270626',
-  })
-  async joinChannelVoice(@Param('channelId') id) {
-    const connection = await this.discord.join(id);
-    return {
-      voice: {
-        id: connection.voice.id,
-        channel: {
-          id: connection.channel.id,
-        },
-      },
-    };
+  @ApiParam(CHANNEL_ID)
+  async joinChannelVoice(@Param('channelId') id: string) {
+    return this.discord.join(id);
   }
 
   @Delete('voice/:channelId')
-  @ApiParam({
-    name: 'channelId',
-    description: 'Voice channel id',
-    type: 'string',
-    required: true,
-    example: '839493031580270626',
-  })
-  async leaveChannelVoice(@Param('channelId') id) {
-    await this.discord.leave(id);
+  @ApiParam(CHANNEL_ID)
+  async leaveChannelVoice(@Param('channelId') id: string) {
+    return this.discord.leave(id);
   }
 }
