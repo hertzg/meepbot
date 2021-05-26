@@ -35,6 +35,6 @@ export class PlayerController {
     example: '839493031580270626',
   })
   async playPause(@Param('channelId') id: string) {
-    return { playNow: await this.player.playPause(id) };
+    return { playNow: await this.player.togglePause(id) };
   }
 }

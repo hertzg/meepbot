@@ -15,7 +15,7 @@ export class DiscordService {
     private readonly _client: Client,
     private readonly config: ConfigService,
   ) {
-    this._client.on('debug', (...args) => this.logger.verbose(format(...args)));
+    //this._client.on('debug', (...args) => this.logger.verbose(format(...args)));
   }
 
   private get client(): Promise<Client> {

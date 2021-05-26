@@ -27,18 +27,23 @@ export class CacheService {
 
   createWriteStream = async (key: string) => {
     if (await this.has(key)) {
-      this.logger.debug(`[Write] Already persisted: ${key}`);
+      this.logger.debug(`[${key}] write: already persisted`);
       return;
     }
 
     if (this.writing.has(key)) {
-      this.logger.debug(`[Write] Already writing: ${key}`);
+      this.logger.debug(`[${key}] write: already writing`);
       return;
     }
 
-    this.logger.debug(`[Write] Creating write stream: ${key}`);
+    this.writing.add(key);
+    this.logger.debug(`[${key}] write: opening storage for writing`);
     const writable = this.storage.createWriteStream(key);
-    writable.once('end', () => this.manifest.add(key));
+    writable.once('finish', () => {
+      this.logger.debug(`[${key}] write: finished writing`);
+      this.manifest.add(key);
+      this.writing.delete(key);
+    });
     return writable;
   };
 }

@@ -19,19 +19,23 @@ export class StorageService {
   private readonly logger = new Logger(StorageService.name);
 
   createReadStream = (key: string): Readable => {
-    this.logger.verbose(`Reading from ${key}`);
+    this.logger.verbose(`[${key}] reading`);
     return createReadStream(blob(key));
   };
 
   createWriteStream = (key: string): Writable => {
-    this.logger.verbose(`Writing to ${key}`);
+    this.logger.verbose(`[${key}] writing: started`);
     const stream = createWriteStream(temp(key));
-    stream.on('end', () => this.persist(key));
+    stream.once('finish', () => {
+      this.logger.verbose(`[${key}] writing: finished`);
+      this.persist(key);
+    });
     return stream;
   };
 
   private persist = async (key: string) => {
-    this.logger.verbose(`Persisting blob ${key}`);
+    this.logger.verbose(`[${key}] moving`);
     await fsPromises.rename(temp(key), blob(key));
+    this.logger.verbose(`[${key}] persisted`);
   };
 }

@@ -26,6 +26,13 @@ export class PlaylistService {
     return queue;
   }
 
+  enqueueAll(key: string, items: string[]): string[] {
+    this.logger.debug(`[${key}] PushAll: Pushed ${items.length} items`);
+    const queue = this.ensureQueue(key);
+    queue.push(...items);
+    return queue;
+  }
+
   dequeue(key: string): string | undefined {
     const queue = this.ensureQueue(key);
     const next = queue.shift();

@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Got, { GotStream, Progress } from 'got';
 import { nanoid } from 'nanoid/async';
+import * as prettyBytes from 'pretty-bytes';
 import { throttle } from '@github/mini-throttle';
-import prettyBytes from 'pretty-bytes';
+import { format } from 'util';
 
 const formatProgress = (p: Progress) => ({
   transferred: prettyBytes(p.transferred),
@@ -20,39 +21,49 @@ export class DownloadService {
     this.progress.set(id, progress);
   };
 
-  private handleAbort = (id: string) => {
+  private handleFinish = (id: string) => {
     this.progress.delete(id);
   };
 
-  private trackStreamAs = (stream: ReturnType<GotStream>, id: string) => {
+  private trackProgress = async (stream: ReturnType<GotStream>) => {
+    const id = await nanoid();
+    this.logger.verbose(`[${id}] download: started`);
     const logProgress = throttle((p: Progress) => {
       const { percent, transferred, total } = formatProgress(p);
       this.logger.debug(
         `[${id}] Received (${percent}%) ${transferred} / ${total} `,
       );
-    });
+    }, 250);
 
     const progressListener = (progress: Progress) => {
       this.handleProgress(id, progress);
       logProgress(progress);
     };
 
-    const abortListener = () => {
+    const finishListener = (err?: any) => {
+      if (err) {
+        this.logger.error(`[${id}] error: ${format(err)}`);
+      } else {
+        this.logger.log(`[${id}] download: finished`);
+      }
       stream.removeListener('downloadProgress', progressListener);
-      stream.removeListener('error', abortListener);
-      stream.removeListener('end', abortListener);
-      this.handleAbort(id);
+      stream.removeListener('error', finishListener);
+      stream.removeListener('end', finishListener);
+      this.handleFinish(id);
     };
 
     stream.on('downloadProgress', progressListener);
-    stream.once('error', abortListener);
-    stream.once('end', abortListener);
+    stream.once('error', finishListener);
+    stream.once('finish', finishListener);
+    return id;
   };
 
   stream = async (url: string) => {
-    const id = await nanoid();
-    const stream = Got.stream({ url });
-    this.trackStreamAs(stream, id);
+    const stream = Got.stream({
+      isStream: true,
+      url,
+    });
+    await this.trackProgress(stream);
     return stream;
   };
 }
