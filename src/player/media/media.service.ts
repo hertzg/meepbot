@@ -2,17 +2,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import { YouTubeService } from './youtube/youtube.service';
 import { DownloadService } from './download.service';
 import { CacheService } from './cache.service';
-import { PassThrough, Readable } from 'stream';
+import { nanoid } from 'nanoid';
+import { watch } from 'fs';
 
 const cacheKey = (prefix: string, key: string) => `${prefix}/${key}`;
 
-export interface YouTubeLink {
-  link: {
+export interface YouTubeLinkInfo {
+  url: {
     url: string;
-    type: 'playlist' | 'video';
+    type: 'playlist' | 'watch';
     id: string;
   };
-  videos: string[];
+  watchUrls: string[];
 }
 
 @Injectable()
@@ -25,53 +26,82 @@ export class MediaService {
     private readonly download: DownloadService,
   ) {}
 
-  fromYouTubeLink = async (url: string): Promise<YouTubeLink> => {
+  fetchYouTubeLink = async (url: string): Promise<YouTubeLinkInfo> => {
     let id: string;
-    let type: 'playlist' | 'video';
-    const videos: string[] = [];
-    const plId = await this.youtube.playlistId(url);
+    let type: 'playlist' | 'watch';
+    const watchLinks: string[] = [];
+    const plId = await this.youtube.extractPlaylistId(url);
     if (plId) {
       id = plId;
       type = 'playlist';
-      videos.push(...(await this.youtube.playlistVideos(url)));
+      watchLinks.push(...(await this.youtube.playlistWatchLinks(url)));
     } else {
-      id = await this.youtube.videoId(url);
-      type = 'video';
-      videos.push(url);
+      id = await this.youtube.extractVideoId(url);
+      type = 'watch';
+      watchLinks.push(url);
     }
 
     return {
-      link: {
+      url: {
         url,
         id,
         type,
       },
-      videos,
+      watchUrls: watchLinks,
     };
   };
 
-  /**
-   * Creates a Readable OPUS Audio Only play from a YouTube video link
-   * @param link full youtube video link
-   */
-  streamVideoLink = async (link: string) => {
-    const key = cacheKey('youtube', await this.youtube.videoId(link));
+  cacheYouTubeWatchLink = async (watchUrl: string, id: string) => {
+    const key = cacheKey(
+      'youtube',
+      await this.youtube.extractVideoId(watchUrl),
+    );
     const cached = await this.cache.createReadStream(key);
     if (cached) {
-      return cached;
+      cached.destroy();
+      return true;
     }
 
-    const [media, cacheStream] = await Promise.all([
-      this.youtube.videoMediaUrl(link),
-      this.cache.createWriteStream(key),
-    ]);
-
+    const cacheStream = await this.cache.createWriteStream(key);
     if (cacheStream) {
       this.logger.debug('Streaming to cache');
-      (await this.download.stream(media)).pipe(cacheStream);
+      const mediaUrl = await this.youtube.mediaUrl(watchUrl);
+
+      if (!mediaUrl) {
+        this.logger.log('Unable to retrieve media url');
+        return false;
+      }
+
+      const stream = await this.download.stream(mediaUrl, `cache-${id}`);
+      stream.pipe(cacheStream);
+    }
+
+    return false;
+  };
+
+  /**
+   * Creates a Readable OPUS Audio Only play from a YouTube watch url
+   * @param watchUrl full youtube watch url
+   */
+  streamYouTubeWatchLink = async (watchUrl: string) => {
+    const id = nanoid();
+    const key = cacheKey(
+      'youtube',
+      await this.youtube.extractVideoId(watchUrl),
+    );
+    const cached = await this.cacheYouTubeWatchLink(watchUrl, id);
+    if (cached) {
+      return (await this.cache.createReadStream(key))!;
     }
 
     this.logger.debug('Streaming to player');
-    return await this.download.stream(media);
+    const mediaUrl = await this.youtube.mediaUrl(watchUrl);
+
+    if (!mediaUrl) {
+      this.logger.debug('No opus stream found');
+      return;
+    }
+
+    return await this.download.stream(mediaUrl, `stream-${id}`);
   };
 }

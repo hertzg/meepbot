@@ -19,8 +19,9 @@ export class StorageService {
   private readonly logger = new Logger(StorageService.name);
 
   createReadStream = (key: string): Readable => {
-    this.logger.verbose(`[${key}] reading`);
-    return createReadStream(blob(key));
+    const path = blob(key);
+    this.logger.verbose(`[${key}] reading ${path}`);
+    return createReadStream(path);
   };
 
   createWriteStream = (key: string): Writable => {

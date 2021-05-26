@@ -6,4 +6,7 @@ export class PlayNowDto {
 
   @ApiProperty()
   channel!: string;
+
+  @ApiProperty()
+  shuffle!: boolean;
 }

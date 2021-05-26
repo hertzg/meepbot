@@ -11,7 +11,7 @@ export class PlaylistService {
     this.queues.delete(key);
   }
 
-  ensureQueue(key: string) {
+  private ensureQueue(key: string) {
     if (!this.queues.has(key)) {
       this.queues.set(key, []);
     }
@@ -19,10 +19,10 @@ export class PlaylistService {
     return this.queues.get(key)!;
   }
 
-  enqueue(key: string, item: string): string[] {
-    this.logger.debug(`[${key}] Push: ${item}`);
+  unshiftAll(key: string, items: string[]): string[] {
+    this.logger.debug(`[${key}] UnshiftAll: Unshifted ${items.length} items`);
     const queue = this.ensureQueue(key);
-    queue.push(item);
+    queue.unshift(...items);
     return queue;
   }
 

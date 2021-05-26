@@ -4,12 +4,24 @@ import { AudioService } from './audio.service';
 import { MediaModule } from './media/media.module';
 import { PlayerService } from './player.service';
 import { PlaylistService } from './playlist.service';
-import { PlayerController } from './player.controller';
+import { CacheService } from './media/cache.service';
+import { ManifestService } from './media/manifest.service';
+import { StorageService } from './media/storage.service';
+import { DownloadService } from './media/download.service';
+import { YouTubeModule } from './media/youtube/youtube.module';
 
 @Module({
-  imports: [DiscordModule, MediaModule],
-  controllers: [PlayerController],
-  providers: [PlaylistService, PlayerService, AudioService],
-  exports: [PlayerService],
+  imports: [YouTubeModule, DiscordModule, MediaModule],
+  controllers: [],
+  providers: [
+    PlaylistService,
+    PlayerService,
+    AudioService,
+    CacheService,
+    ManifestService,
+    StorageService,
+    DownloadService,
+  ],
+  exports: [PlayerService, MediaModule, CacheService],
 })
 export class PlayerModule {}

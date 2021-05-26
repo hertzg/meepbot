@@ -3,7 +3,6 @@ import { DiscordService } from './discord/discord.service';
 import { PlaylistService } from './playlist.service';
 import { AudioService, AudioState } from './audio.service';
 import { MediaService } from './media/media.service';
-import { format } from 'util';
 
 @Injectable()
 export class PlayerService {
@@ -16,20 +15,15 @@ export class PlayerService {
     private readonly playlist: PlaylistService,
   ) {}
 
-  playNow = async (channelId: string, link: string) => {
+  playNow = async (channelId: string, watchUrls: string[]) => {
     const prevState = this.audio.getState(channelId);
     switch (prevState) {
       case undefined:
       case AudioState.READY:
       case AudioState.PAUSED:
       case AudioState.PLAYING:
-        const [info] = await Promise.all([
-          this.media.fromYouTubeLink(link),
-          this.stop(channelId),
-        ]);
-        this.logger.log(`[PlayNow] ${format(info)}`);
-
-        this.playlist.enqueueAll(channelId, info.videos);
+        await this.stop(channelId);
+        this.playlist.enqueueAll(channelId, watchUrls);
         await this.autoPlayNext(channelId);
         break;
     }
@@ -37,10 +31,22 @@ export class PlayerService {
     return [prevState, this.audio.getState(channelId)];
   };
 
-  private autoPlay = async (channelId: string, link: string) => {
-    const stream = await this.media.streamVideoLink(link);
-    await this.audio.connect(channelId);
+  playTemp = async (channelId: string, watchUrls: string[]) => {
+    const prevState = this.audio.getState(channelId);
+    this.playlist.unshiftAll(channelId, watchUrls);
+    await this.autoPlayNext(channelId);
+    return [prevState, this.audio.getState(channelId)];
+  };
 
+  private autoPlay = async (channelId: string, link: string) => {
+    const stream = await this.media.streamYouTubeWatchLink(link);
+    if (!stream) {
+      this.logger.log(`[${channelId}] autoPlay: no opus stream, playNext`);
+      await this.autoPlayNext(channelId);
+      return false;
+    }
+
+    await this.audio.connect(channelId);
     this.logger.verbose(`[${channelId}] autoPlay: play audio`);
     const played = await this.audio.play(channelId, stream, () => {
       this.logger.verbose(`[${channelId}] autoPlay: audio finished`);
