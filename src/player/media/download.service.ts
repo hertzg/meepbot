@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Got, { GotStream, Progress } from 'got';
 import { nanoid } from 'nanoid/async';
-import * as prettyBytes from 'pretty-bytes';
+import prettyBytes from 'pretty-bytes';
 import { throttle } from '@github/mini-throttle';
 import { format } from 'util';
 

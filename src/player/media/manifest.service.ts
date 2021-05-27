@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createAppendStream } from './createAppendStream';
-import * as mem from 'mem';
+import mem from 'mem';
 import { PathLike } from 'fs';
 import { format } from 'util';
 

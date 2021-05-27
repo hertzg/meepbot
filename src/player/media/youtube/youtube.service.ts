@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { chooseFormat, getInfo, getVideoID } from 'ytdl-core';
-import * as ytpl from 'ytpl';
-import * as mem from 'mem';
+import ytpl from 'ytpl';
+import mem from 'mem';
 
 interface IFindAudioStreamOptions {
   quality: 'lowest' | 'highest';

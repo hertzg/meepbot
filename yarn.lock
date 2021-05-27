@@ -1051,6 +1051,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsconfig/node14@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@tsconfig/node14@npm:1.0.0"
+  checksum: 3eda14250ed8a03910ce822056f0d2fc2bcf41d9f1f3c6b202a6b32277dc638f475425fe7a1c03fbdba4e7f3b89668ecbac92d101c9e9fb56018c098393759ec
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.7":
   version: 7.1.14
   resolution: "@types/babel__core@npm:7.1.14"
@@ -5775,6 +5782,7 @@ __metadata:
     "@nestjs/schematics": ^7.3.1
     "@nestjs/swagger": ^4.8.0
     "@nestjs/testing": ^7.6.17
+    "@tsconfig/node14": ^1.0.0
     "@types/express": ^4.17.11
     "@types/jest": ^26.0.23
     "@types/node": ^15.6.0

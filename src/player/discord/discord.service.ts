@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Channel, Client, VoiceChannel } from 'discord.js';
 import { Readable } from 'stream';
-import { format } from 'util';
 import { ConfigService } from '@nestjs/config';
 
 const isVoiceChannel = (channel: Channel): channel is VoiceChannel =>
