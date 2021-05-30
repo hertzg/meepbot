@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "cli": {
+    "defaultCollection": "@nrwl/nest"
+  },
+  "defaultProject": "bot",
+  "projects": {
+    "bot": {
+      "root": "apps/bot",
+      "sourceRoot": "apps/bot/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "progress": true,
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bot",
+            "main": "apps/bot/src/main.ts",
+            "tsConfig": "apps/bot/tsconfig.app.json",
+            "assets": ["apps/bot/src/assets"],
+            "generatePackageJson": true
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/bot/src/environments/environment.ts",
+                  "with": "apps/bot/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "bot:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/bot/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/bot"],
+          "options": {
+            "jestConfig": "apps/bot/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  }
+}
