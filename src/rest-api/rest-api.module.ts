@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PlayerModule } from '../player/player.module';
-import { MeepBotController } from './meep-bot.controller';
+import { RestApiController } from './rest-api.controller';
 
 @Module({
   imports: [PlayerModule],
-  controllers: [MeepBotController],
+  controllers: [RestApiController],
 })
-export class StreamDeckModule {}
+export class RestApiModule {}

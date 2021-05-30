@@ -6,9 +6,9 @@ import { PlayerControlDto } from './dto/player-control.dto';
 import { MediaService } from '../player/media/media.service';
 import { nanoid } from 'nanoid';
 
-@ApiTags('meep-bot')
+@ApiTags('rest-api')
 @Controller('meep-bot')
-export class MeepBotController {
+export class RestApiController {
   constructor(
     private readonly player: PlayerService,
     private readonly media: MediaService,
